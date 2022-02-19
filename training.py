@@ -2,7 +2,7 @@ import os
 from src.utils.common import read_config
 from src.utils.data_mgmt import get_data
 import src
-from src.utils.model import create_model
+from src.utils.model import create_model,save_model
 
 import argparse
 
@@ -16,14 +16,21 @@ def training(config_path):
     METRICS=config["params"]["metrics"]
     NUM_CLASSES=config["params"]["no_classes"]
 
-    MODEL=create_model(LOSS_FUNCTION,OPTIMIZER,METRICS,NUM_CLASSES)
+    model=create_model(LOSS_FUNCTION,OPTIMIZER,METRICS,NUM_CLASSES)
 
     EPOCHS = config["params"]["epochs"]
     VALIDATION_SET = (X_valid, y_valid)
 
-    history = MODEL.fit(X_train, y_train, epochs=EPOCHS,
+    history = model.fit(X_train, y_train, epochs=EPOCHS,
                     validation_data=VALIDATION_SET)
+    artifacts_dir=config["artifacts"]["artifacts_dir"]
+    model_dir = config["artifacts"]["model_dir"]
+    model_dir_path=os.path.join(artifacts_dir,model_dir)
+    os.makedirs(model_dir_path,exist_ok=True)
+    model_name=config["artifacts"]["model_name"]
 
+
+    save_model(model,model_name,model_dir_path)
 
 
 
